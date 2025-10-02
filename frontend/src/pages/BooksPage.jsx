@@ -13,7 +13,7 @@ const BooksPage = () => {
     condition: 'Good',
   });
   const [editingBook, setEditingBook] = useState(null);
-  const [swapInputs, setSwapInputs] = useState({}); // Track offered book & message per book
+  const [swapInputs, setSwapInputs] = useState({});
 
   // Fetch books
   useEffect(() => {
@@ -21,18 +21,18 @@ const BooksPage = () => {
 
     const fetchBooks = async () => {
       try {
-        const resMine = await axiosInstance.get('/api/books/mine', {
+        const resMine = await axiosInstance.get('/books/mine', {
           headers: { Authorization: `Bearer ${user.token}` },
         });
         setMyBooks(resMine.data);
 
-        const resAll = await axiosInstance.get('/api/books/all', {
+        const resAll = await axiosInstance.get('/books/all', {
           headers: { Authorization: `Bearer ${user.token}` },
         });
         setAllBooks(resAll.data);
       } catch (err) {
         console.error('Error fetching books:', err);
-        alert('Failed to fetch books.');
+        alert(err.response?.data?.message || 'Failed to fetch books.');
       }
     };
 
@@ -55,13 +55,13 @@ const BooksPage = () => {
 
     try {
       if (editingBook) {
-        const res = await axiosInstance.put(`/api/books/${editingBook._id}`, formData, {
+        const res = await axiosInstance.put(`/books/${editingBook._id}`, formData, {
           headers: { Authorization: `Bearer ${user.token}` },
         });
         setMyBooks(myBooks.map((b) => (b._id === res.data._id ? res.data : b)));
         setEditingBook(null);
       } else {
-        const res = await axiosInstance.post('/api/books', formData, {
+        const res = await axiosInstance.post('/books', formData, {
           headers: { Authorization: `Bearer ${user.token}` },
         });
         setMyBooks([...myBooks, res.data]);
@@ -91,7 +91,7 @@ const BooksPage = () => {
     if (!window.confirm('Are you sure you want to delete this book?')) return;
 
     try {
-      await axiosInstance.delete(`/api/books/${bookId}`, {
+      await axiosInstance.delete(`/books/${bookId}`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       setMyBooks(myBooks.filter((b) => b._id !== bookId));
@@ -117,15 +117,17 @@ const BooksPage = () => {
 
     try {
       await axiosInstance.post(
-        '/api/swap-requests',
+        '/swap-requests',
         { requestedBookId: book._id, offeredBookId, message },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
 
       alert('Swap request sent successfully!');
-      setAllBooks(allBooks.map((b) =>
-        b._id === book._id ? { ...b, available: false } : b
-      ));
+      setAllBooks(
+        allBooks.map((b) =>
+          b._id === book._id ? { ...b, available: false } : b
+        )
+      );
       setSwapInputs({ ...swapInputs, [book._id]: { offeredBookId: '', message: '' } });
     } catch (err) {
       console.error('Error requesting swap:', err);
@@ -141,35 +143,10 @@ const BooksPage = () => {
       <div className="bg-white p-6 shadow-md rounded mb-6">
         <h2 className="text-2xl font-semibold mb-4">{editingBook ? 'Edit Book' : 'Add a New Book'}</h2>
         <form onSubmit={handleAddOrUpdateBook} className="space-y-4">
-          <input
-            type="text"
-            name="title"
-            placeholder="Title"
-            value={formData.title}
-            onChange={handleInputChange}
-            className="w-full p-2 border rounded"
-          />
-          <input
-            type="text"
-            name="author"
-            placeholder="Author"
-            value={formData.author}
-            onChange={handleInputChange}
-            className="w-full p-2 border rounded"
-          />
-          <textarea
-            name="description"
-            placeholder="Description"
-            value={formData.description}
-            onChange={handleInputChange}
-            className="w-full p-2 border rounded"
-          />
-          <select
-            name="condition"
-            value={formData.condition}
-            onChange={handleInputChange}
-            className="w-full p-2 border rounded"
-          >
+          <input type="text" name="title" placeholder="Title" value={formData.title} onChange={handleInputChange} className="w-full p-2 border rounded" />
+          <input type="text" name="author" placeholder="Author" value={formData.author} onChange={handleInputChange} className="w-full p-2 border rounded" />
+          <textarea name="description" placeholder="Description" value={formData.description} onChange={handleInputChange} className="w-full p-2 border rounded" />
+          <select name="condition" value={formData.condition} onChange={handleInputChange} className="w-full p-2 border rounded">
             <option value="New">New</option>
             <option value="Like New">Like New</option>
             <option value="Good">Good</option>
@@ -196,23 +173,11 @@ const BooksPage = () => {
                   <p className="text-gray-600">by {book.author}</p>
                   <p className="mt-2">{book.description}</p>
                   <p className="mt-1 text-sm text-gray-500">Condition: {book.condition}</p>
-                  <p className="mt-1 text-sm text-gray-500">
-                    Status: {book.available ? 'Available' : 'Unavailable'}
-                  </p>
+                  <p className="mt-1 text-sm text-gray-500">Status: {book.available ? 'Available' : 'Unavailable'}</p>
                 </div>
                 <div className="mt-4 flex gap-2">
-                  <button
-                    className="flex-1 bg-yellow-500 text-white p-2 rounded hover:bg-yellow-600"
-                    onClick={() => handleEditBook(book)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="flex-1 bg-red-500 text-white p-2 rounded hover:bg-red-600"
-                    onClick={() => handleDeleteBook(book._id)}
-                  >
-                    Delete
-                  </button>
+                  <button className="flex-1 bg-yellow-500 text-white p-2 rounded hover:bg-yellow-600" onClick={() => handleEditBook(book)}>Edit</button>
+                  <button className="flex-1 bg-red-500 text-white p-2 rounded hover:bg-red-600" onClick={() => handleDeleteBook(book._id)}>Delete</button>
                 </div>
               </div>
             ))}
@@ -235,9 +200,7 @@ const BooksPage = () => {
                   <p className="mt-2">{book.description}</p>
                   <p className="mt-1 text-sm text-gray-500">Condition: {book.condition}</p>
                   <p className="mt-1 text-sm text-gray-500">Owner: {book.ownerId?.name || 'Unknown'}</p>
-                  <p className="mt-1 text-sm text-gray-500">
-                    Status: {book.available ? 'Available' : 'Unavailable'}
-                  </p>
+                  <p className="mt-1 text-sm text-gray-500">Status: {book.available ? 'Available' : 'Unavailable'}</p>
                 </div>
 
                 {book.available && (
@@ -259,10 +222,7 @@ const BooksPage = () => {
                       onChange={(e) => handleSwapInputChange(book._id, 'message', e.target.value)}
                       className="w-full p-2 border rounded"
                     />
-                    <button
-                      className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700"
-                      onClick={() => handleRequestSwapWithDetails(book)}
-                    >
+                    <button className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700" onClick={() => handleRequestSwapWithDetails(book)}>
                       Request Swap
                     </button>
                   </div>

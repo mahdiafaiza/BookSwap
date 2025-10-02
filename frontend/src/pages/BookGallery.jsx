@@ -8,18 +8,18 @@ const LandingPage = () => {
   const [myBooks, setMyBooks] = useState([]);
   const [swapInputs, setSwapInputs] = useState({}); // Track offered book & message per book
 
-  // Fetch all books excluding user's own
+  // Fetch books
   useEffect(() => {
     const fetchBooks = async () => {
       try {
         if (user?.token) {
-          const resMine = await axiosInstance.get('/api/books/mine', {
+          const resMine = await axiosInstance.get('/books/mine', {
             headers: { Authorization: `Bearer ${user.token}` },
           });
           setMyBooks(resMine.data);
         }
 
-        const resAll = await axiosInstance.get('/api/books/all', {
+        const resAll = await axiosInstance.get('/books/all', {
           headers: user?.token ? { Authorization: `Bearer ${user.token}` } : {},
         });
         setBooks(resAll.data);
@@ -47,16 +47,21 @@ const LandingPage = () => {
 
     try {
       await axiosInstance.post(
-        '/api/swap-requests',
+        '/swap-requests',
         { requestedBookId: book._id, offeredBookId, message },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
 
       alert('Swap request sent successfully!');
-      setBooks(books.map((b) =>
-        b._id === book._id ? { ...b, available: false } : b
-      ));
-      setSwapInputs({ ...swapInputs, [book._id]: { offeredBookId: '', message: '' } });
+      setBooks(
+        books.map((b) =>
+          b._id === book._id ? { ...b, available: false } : b
+        )
+      );
+      setSwapInputs({
+        ...swapInputs,
+        [book._id]: { offeredBookId: '', message: '' },
+      });
     } catch (err) {
       console.error('Error requesting swap:', err);
       alert(err.response?.data?.message || 'Failed to request swap.');
@@ -71,10 +76,8 @@ const LandingPage = () => {
         <p className="text-lg md:text-xl text-gray-700">
           Swap, share, and discover books with fellow readers. Find your next great read or exchange
           books you no longer need. Safe, simple, and social!
-          
         </p>
-
-        <small>Remember: You will get Book owner's email after they accept your request.</small>
+        <small>📧 You’ll get the owner’s email after they accept your request.</small>
       </section>
 
       {/* Books Gallery */}
@@ -85,33 +88,46 @@ const LandingPage = () => {
         ) : (
           <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {books.map((book) => (
-              <div key={book._id} className="bg-white p-4 shadow-lg rounded flex flex-col justify-between">
+              <div
+                key={book._id}
+                className="bg-white p-4 shadow-lg rounded flex flex-col justify-between"
+              >
                 <div>
                   <h3 className="text-xl font-bold">{book.title}</h3>
                   <p className="text-gray-600">by {book.author}</p>
                   <p className="mt-2 text-gray-700">{book.description}</p>
                   <p className="mt-1 text-sm text-gray-500">Condition: {book.condition}</p>
-                  <p className="mt-1 text-sm text-gray-500">Status: {book.available ? 'Available' : 'Unavailable'}</p>
-                  <p className="mt-1 text-sm text-gray-500">Owner: {book.ownerId?.name || 'Unknown'}</p>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Status: {book.available ? 'Available' : 'Unavailable'}
+                  </p>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Owner: {book.ownerId?.name || 'Unknown'}
+                  </p>
                 </div>
 
-                {book.available && user?.token && (
+                {book.available && user?.token ? (
                   <div className="mt-4 space-y-2">
                     <select
                       value={swapInputs[book._id]?.offeredBookId || ''}
-                      onChange={(e) => handleSwapInputChange(book._id, 'offeredBookId', e.target.value)}
+                      onChange={(e) =>
+                        handleSwapInputChange(book._id, 'offeredBookId', e.target.value)
+                      }
                       className="w-full p-2 border rounded"
                     >
                       <option value="">-- Select your book to offer (optional) --</option>
                       {myBooks.map((b) => (
-                        <option key={b._id} value={b._id}>{b.title} ({b.condition})</option>
+                        <option key={b._id} value={b._id}>
+                          {b.title} ({b.condition})
+                        </option>
                       ))}
                     </select>
                     <input
                       type="text"
                       placeholder="Message (optional)"
                       value={swapInputs[book._id]?.message || ''}
-                      onChange={(e) => handleSwapInputChange(book._id, 'message', e.target.value)}
+                      onChange={(e) =>
+                        handleSwapInputChange(book._id, 'message', e.target.value)
+                      }
                       className="w-full p-2 border rounded"
                     />
                     <button
@@ -121,6 +137,12 @@ const LandingPage = () => {
                       Request Swap
                     </button>
                   </div>
+                ) : (
+                  book.available && (
+                    <p className="text-sm text-blue-600 mt-3">
+                      🔒 Login to request this book
+                    </p>
+                  )
                 )}
               </div>
             ))}

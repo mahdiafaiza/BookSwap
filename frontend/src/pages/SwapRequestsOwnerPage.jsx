@@ -12,13 +12,13 @@ const SwapRequestsOwnerPage = () => {
 
     const fetchOwnerRequests = async () => {
       try {
-        const res = await axiosInstance.get('/api/swap-requests/owner', {
+        const res = await axiosInstance.get('/swap-requests/owner', {
           headers: { Authorization: `Bearer ${user.token}` },
         });
         setOwnerRequests(res.data);
       } catch (err) {
         console.error('Error fetching owner swap requests:', err);
-        alert('Failed to fetch swap requests.');
+        alert(err.response?.data?.message || 'Failed to fetch swap requests.');
       }
     };
 
@@ -29,7 +29,7 @@ const SwapRequestsOwnerPage = () => {
   const handleRespond = async (reqId, status) => {
     try {
       const res = await axiosInstance.put(
-        `/api/swap-requests/${reqId}/respond`,
+        `/swap-requests/${reqId}/respond`,
         { status },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
@@ -57,7 +57,7 @@ const SwapRequestsOwnerPage = () => {
                 <h3 className="text-xl font-semibold">{req.requestedBookId?.title}</h3>
                 <p className="text-gray-600">by {req.requestedBookId?.author}</p>
                 <p className="mt-1 text-sm">Requested by: {req.requesterId?.name}</p>
-                <p className="mt-1 text-sm">Book Offered for Swap: {req.offeredBookId?.title}</p>
+                <p className="mt-1 text-sm">Book Offered for Swap: {req.offeredBookId?.title || 'None'}</p>
                 <p className="mt-1 text-sm">Email: {req.requesterId?.email}</p>
                 <p className="mt-2 text-sm">Message: {req.message || 'No message'}</p>
                 <p className="mt-1 font-semibold">Status: {req.status}</p>

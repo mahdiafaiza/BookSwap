@@ -1,28 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Profile from "./pages/Profile";
+import Tasks from "./pages/Tasks";
+import BookGallery from "./pages/BookGallery";
+import BooksPage from "./pages/BooksPage";
+import MySwapRequestsPage from "./pages/MySwapRequestsPage";
+import SwapRequestsOwnerPage from "./pages/SwapRequestsOwnerPage";
+import { useAuth } from "./context/AuthContext";
 
-function App() {
-  const [msg, setMsg] = useState("");
-
-  useEffect(() => {
-    axios.get("http://127.0.0.1:5000/api/hello")
-      .then(res => setMsg(res.data.message))
-      .catch(err => console.error(err));
-  }, []);
-
-  return (
-
-    <div className="bg-red-500 text-white text-3xl p-5">
-      {msg}
-      <br></br>
-      If this is red with big white text, Tailwind works 🎉
-    </div>
-  )
-  
-  ;
+// ✅ Protected route wrapper
+function PrivateRoute({ children }) {
+  const { user } = useAuth();
+  return user ? children : <Navigate to="/login" replace />;
 }
 
+function App() {
+  return (
+    <Router>
+      <Navbar />
+      <Routes>
+        {/* Public routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        {/* Protected routes */}
+        <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+        <Route path="/tasks" element={<PrivateRoute><Tasks /></PrivateRoute>} />
+        <Route path="/books" element={<PrivateRoute><BooksPage /></PrivateRoute>} />
+        <Route path="/swap-requests/owner" element={<PrivateRoute><SwapRequestsOwnerPage /></PrivateRoute>} />
+        <Route path="/swap-requests/requester" element={<PrivateRoute><MySwapRequestsPage /></PrivateRoute>} />
+
+        {/* Public landing page */}
+        <Route path="/" element={<BookGallery />} />
+      </Routes>
+    </Router>
+  );
+}
 
 export default App;

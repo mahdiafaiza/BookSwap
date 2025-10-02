@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import axiosInstance from '../axiosConfig';
 
 const Profile = () => {
-  const { user } = useAuth(); // Access user token from context
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -13,11 +13,10 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Fetch profile data from the backend
     const fetchProfile = async () => {
       setLoading(true);
       try {
-        const response = await axiosInstance.get('/api/auth/profile', {
+        const response = await axiosInstance.get('/auth/profile', {
           headers: { Authorization: `Bearer ${user.token}` },
         });
         setFormData({
@@ -27,25 +26,25 @@ const Profile = () => {
           address: response.data.address || '',
         });
       } catch (error) {
-        alert('Failed to fetch profile. Please try again.');
+        alert(error.response?.data?.message || 'Failed to fetch profile.');
       } finally {
         setLoading(false);
       }
     };
 
-    if (user) fetchProfile();
+    if (user?.token) fetchProfile();
   }, [user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await axiosInstance.put('/api/auth/profile', formData, {
+      await axiosInstance.put('/auth/profile', formData, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       alert('Profile updated successfully!');
     } catch (error) {
-      alert('Failed to update profile. Please try again.');
+      alert(error.response?.data?.message || 'Failed to update profile.');
     } finally {
       setLoading(false);
     }

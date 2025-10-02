@@ -15,7 +15,7 @@ const MySwapRequestsPage = () => {
     const fetchRequests = async () => {
       setLoading(true);
       try {
-        const res = await axiosInstance.get('/api/swap-requests/requester', {
+        const res = await axiosInstance.get('/swap-requests/requester', {
           headers: { Authorization: `Bearer ${user.token}` },
         });
         setMyRequests(res.data);
@@ -47,11 +47,25 @@ const MySwapRequestsPage = () => {
                 <h2 className="text-xl font-semibold">{req.requestedBookId?.title}</h2>
                 <p className="text-gray-600">Author: {req.requestedBookId?.author}</p>
                 <p className="text-gray-600">Owner: {req.ownerId?.name}</p>
+
                 {req.status === 'accepted' && req.ownerId?.email && (
-                  <p className="text-green-600">Owner Email: {req.ownerId.email}</p>
+                  <p className="text-green-600">📧 Owner Email: {req.ownerId.email}</p>
                 )}
+
+                {req.offeredBookId && (
+                  <p className="mt-1 text-sm">
+                    You offered: <span className="font-semibold">{req.offeredBookId.title}</span>
+                  </p>
+                )}
+
                 <p className="mt-1 font-semibold">Status: {req.status}</p>
                 <p className="mt-1 text-sm text-gray-500">Message: {req.message || 'No message'}</p>
+
+                {req.createdAt && (
+                  <p className="mt-2 text-xs text-gray-400">
+                    Requested on: {new Date(req.createdAt).toLocaleDateString()}
+                  </p>
+                )}
               </div>
             </div>
           ))}

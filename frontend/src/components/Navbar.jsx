@@ -1,3 +1,4 @@
+// src/components/Navbar.jsx
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -11,37 +12,39 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-purple-900 text-white p-4 flex justify-between items-center">
-      <Link to="/" className="text-2xl font-bold">BookSwap</Link>
-      <div>
+    <nav className="bg-purple-900 text-white px-6 py-4 flex justify-between items-center shadow-lg">
+      {/* Logo / Home link */}
+      <Link to="/" className="text-2xl font-bold hover:text-gray-200 transition">
+        📚 BookSwap
+      </Link>
+
+      {/* Links */}
+      <div className="flex items-center space-x-4">
         {user ? (
           <>
-            {/* ✅ Updated Books link */}
-            <Link to="/" className="mr-4">Gallery</Link>
-            <Link to="/books" className="mr-4">Books</Link>
-            {/* ✅ New Requests link */}
-      <Link to="/swap-requests/owner" className="mr-4 text-white font-semibold hover:text-blue-400">
-          Swap Requests
-        </Link>
-        <Link to="/swap-requests/requester" className=" mr-4 text-white font-semibold hover:text-blue-400">
-          My Requests
-        </Link>
-            <Link to="/profile" className="mr-4 px-4 py-2 bg-blue-700 text-white font-semibold rounded-lg shadow hover:bg-blue-500 transition">username:  <span>
-          {user.name}
-              </span></Link>
+            <Link to="/" className="hover:text-gray-300">Gallery</Link>
+            <Link to="/books" className="hover:text-gray-300">Books</Link>
+            <Link to="/swap-requests/owner" className="hover:text-gray-300">Swap Requests</Link>
+            <Link to="/swap-requests/requester" className="hover:text-gray-300">My Requests</Link>
+            <Link
+              to="/profile"
+              className="px-3 py-1 bg-blue-700 rounded-lg hover:bg-blue-600 transition"
+            >
+              {user.name ? `Hi, ${user.name}` : 'Profile'}
+            </Link>
             <button
               onClick={handleLogout}
-              className="bg-red-500 px-4 py-2 rounded hover:bg-red-700"
+              className="bg-red-600 px-3 py-1 rounded-lg hover:bg-red-500 transition"
             >
               Logout
             </button>
           </>
         ) : (
           <>
-            <Link to="/login" className="mr-4">Login</Link>
+            <Link to="/login" className="hover:text-gray-300">Login</Link>
             <Link
               to="/register"
-              className="bg-green-500 px-4 py-2 rounded hover:bg-green-700"
+              className="px-3 py-1 bg-green-600 rounded-lg hover:bg-green-500 transition"
             >
               Register
             </Link>
