@@ -77,7 +77,7 @@ const LandingPage = () => {
           Swap, share, and discover books with fellow readers. Find your next great read or exchange
           books you no longer need. Safe, simple, and social!
         </p>
-        <small>You will be able to see the request you have recieved and the swap request you've sent!</small>
+        <small>Hey - You will be able to see the request you have recieved and the swap request you've sent!</small>
       </section>
 
       {/* Books Gallery */}
