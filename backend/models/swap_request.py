@@ -2,27 +2,38 @@
 from config.db import mongo
 from bson import ObjectId
 
+
 class SwapRequestModel:
     @staticmethod
-    def collection():
-        return mongo.db.swap_requests
+    def _collection():
+        from flask import current_app
+        return current_app.extensions['mongo'].db.swap_requests
 
     @staticmethod
-    def create(request_data):
-        return SwapRequestModel.collection().insert_one(request_data)
+    def create(swap_request):
+        """Insert a new swap request and return the new ID as a string."""
+        result = SwapRequestModel._collection().insert_one(swap_request)
+        return str(result.inserted_id)
 
     @staticmethod
-    def find_all(query=None):
-        return list(SwapRequestModel.collection().find(query or {}))
+    def find_all(query={}):
+        """Return all swap requests matching a query as a list of dicts."""
+        return list(SwapRequestModel._collection().find(query))
 
     @staticmethod
-    def find_by_id(request_id):
-        return SwapRequestModel.collection().find_one({"_id": ObjectId(request_id)})
+    def find_by_id(swap_request_id):
+        """Return a single swap request by its ID."""
+        return SwapRequestModel._collection().find_one({"_id": ObjectId(swap_request_id)})
 
     @staticmethod
-    def update(request_id, updates):
-        return SwapRequestModel.collection().update_one({"_id": ObjectId(request_id)}, {"$set": updates})
+    def update(swap_request_id, updates):
+        """Update a swap request by its ID."""
+        return SwapRequestModel._collection().update_one(
+            {"_id": ObjectId(swap_request_id)},
+            {"$set": updates}
+        )
 
     @staticmethod
-    def delete(request_id):
-        return SwapRequestModel.collection().delete_one({"_id": ObjectId(request_id)})
+    def delete(swap_request_id):
+        """Delete a swap request by its ID."""
+        return SwapRequestModel._collection().delete_one({"_id": ObjectId(swap_request_id)})

@@ -3,7 +3,8 @@ from flask import jsonify, request
 from bson import ObjectId
 from models.book import BookModel
 
-# ✅ Get all available books (excluding current user's own)
+
+# Get all available books (excluding current user's own)
 def get_books(user_id=None):
     query = {"available": True}
     if user_id:
@@ -16,7 +17,7 @@ def get_books(user_id=None):
     return jsonify(books), 200
 
 
-# ✅ Get current user's own books
+# Get current user's own books
 def get_my_books(user_id):
     books = BookModel.find_all({"ownerId": ObjectId(user_id)})
     for book in books:
@@ -25,7 +26,7 @@ def get_my_books(user_id):
     return jsonify(books), 200
 
 
-# ✅ Add a new book listing
+# Add a new book listing
 def add_book(user_id):
     data = request.json
     if not data.get("title") or not data.get("author") or not data.get("condition"):
@@ -40,13 +41,14 @@ def add_book(user_id):
         "available": True,
     }
 
-    result = BookModel.create(book)
-    book["_id"] = str(result.inserted_id)
+    # BookModel.create now returns a string ID
+    book_id = BookModel.create(book)
+    book["_id"] = book_id
     book["ownerId"] = str(book["ownerId"])
     return jsonify(book), 201
 
 
-# ✅ Update book details (only owner can update)
+# Update book details (only owner can update)
 def update_book(user_id, book_id):
     book = BookModel.find_by_id(book_id)
     if not book:
@@ -69,7 +71,7 @@ def update_book(user_id, book_id):
     return jsonify(updates), 200
 
 
-# ✅ Delete book listing (only owner can delete)
+# Delete book listing (only owner can delete)
 def delete_book(user_id, book_id):
     book = BookModel.find_by_id(book_id)
     if not book:

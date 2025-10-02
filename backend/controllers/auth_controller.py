@@ -5,6 +5,7 @@ import jwt, os
 
 JWT_SECRET = os.getenv("JWT_SECRET")
 
+
 # ---------- Register ----------
 def register_user():
     data = request.json
@@ -21,6 +22,7 @@ def register_user():
     if existing:
         return jsonify({"message": "User already exists"}), 400
 
+    # password will be hashed inside UserModel.create
     user_id = UserModel.create(name, email, password, university, address)
     user = UserModel.find_by_id(user_id)
     token = jwt.encode({"id": str(user["_id"])}, JWT_SECRET, algorithm="HS256")
@@ -75,6 +77,7 @@ def update_user_profile(current_user):
         "university": data.get("university", current_user.get("university")),
         "address": data.get("address", current_user.get("address")),
     }
+
 
     UserModel.update(current_user["_id"], update_fields)
     updated = UserModel.find_by_id(current_user["_id"])
