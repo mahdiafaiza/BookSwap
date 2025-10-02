@@ -69,7 +69,7 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="container mx-auto px-6 py-10">
+    <div className="container mx-auto px-6 py-10 bg-gray-100 min-h-screen">
       {/* Hero Section */}
       <section className="text-left mb-12">
         <h1 className="text-4xl md:text-5xl font-bold mb-4">Welcome to BookSwap</h1>
@@ -77,7 +77,7 @@ const LandingPage = () => {
           Swap, share, and discover books with fellow readers. Find your next great read or exchange
           books you no longer need. Safe, simple, and social!
         </p>
-        <small>📧 You’ll get the owner’s email after they accept your request.</small>
+        <small>You will be able to see the request you have recieved and the swap request you've sent!</small>
       </section>
 
       {/* Books Gallery */}
@@ -101,7 +101,7 @@ const LandingPage = () => {
                     Status: {book.available ? 'Available' : 'Unavailable'}
                   </p>
                   <p className="mt-1 text-sm text-gray-500">
-                    Owner: {book.ownerId?.name || 'Unknown'}
+                    Owner: {book.ownerId?.name || '___'}
                   </p>
                 </div>
 
