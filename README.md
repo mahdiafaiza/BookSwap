@@ -58,16 +58,23 @@ The platform is structured into Frontend, Backend, and Database components with 
 1. Clone the repository:  
    ```bash
    git clone https://github.com/mahdiafaiza/BookSwap.git
-   cd Freelancer-Project-Bidding-Platform
+   cd BookSwap
    ```
 
-2. Install dependencies:  
+2. SetUp & Start Backend (open terminal):  
    ```bash
-   npm run install-all
+   cd Backend
+   python -m venv venv
+   venv\Scripts\activate      # If Windows
+   venv\Bins\activate         # If Mac
+   pip install -r requirements.txt
+   python server.py
    ```
 
-3. Start backend server & frontend concurrently:  
+3. SetUp & Start Frontend (open another terminal):  
    ```bash
+   cd Frontend
+   npm install all
    npm start
    ```
 
