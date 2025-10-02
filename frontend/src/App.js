@@ -12,7 +12,17 @@ function App() {
       .catch(err => console.error(err));
   }, []);
 
-  return <h1>{msg}</h1>;
+  return (
+
+    <div className="bg-red-500 text-white text-3xl p-5">
+      {msg}
+      <br></br>
+      If this is red with big white text, Tailwind works 🎉
+    </div>
+  )
+  
+  ;
 }
+
 
 export default App;
