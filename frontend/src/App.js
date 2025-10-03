@@ -9,6 +9,7 @@ import BooksPage from "./pages/BooksPage";
 import MySwapRequestsPage from "./pages/MySwapRequestsPage";
 import SwapRequestsOwnerPage from "./pages/SwapRequestsOwnerPage";
 import { useAuth } from "./context/AuthContext";
+import LandingPage from "./pages/LandingPage";
 
 // ✅ Protected route wrapper
 function PrivateRoute({ children }) {
@@ -33,7 +34,7 @@ function App() {
         <Route path="/swap-requests/requester" element={<PrivateRoute><MySwapRequestsPage /></PrivateRoute>} />
 
         {/* Public landing page */}
-        <Route path="/" element={<BookGallery />} />
+        <Route path="/" element={<LandingPage />} />
       </Routes>
     </Router>
   );

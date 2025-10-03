@@ -22,12 +22,12 @@ const LandingPage = () => {
                 </p>
 
                 {/* Action Button */}
-                <Link
+                <button
                     to="/register"
                     className="bg-green-500 px-4 py-2 rounded hover:bg-green-700"
                 >
                     Register
-                </Link>
+                </button>
             </div>
         </section>
     </div>
