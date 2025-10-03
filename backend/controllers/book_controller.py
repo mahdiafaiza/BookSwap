@@ -1,8 +1,6 @@
-# controllers/book_controller.py
 from flask import jsonify, request
 from bson import ObjectId
 from models.book import BookModel
-
 
 # Get all available books (excluding current user's own)
 def get_books(user_id=None):
@@ -16,7 +14,6 @@ def get_books(user_id=None):
         book["ownerId"] = str(book["ownerId"])
     return jsonify(books), 200
 
-
 # Get current user's own books
 def get_my_books(user_id):
     books = BookModel.find_all({"ownerId": ObjectId(user_id)})
@@ -24,7 +21,6 @@ def get_my_books(user_id):
         book["_id"] = str(book["_id"])
         book["ownerId"] = str(book["ownerId"])
     return jsonify(books), 200
-
 
 # Add a new book listing
 def add_book(user_id):
@@ -41,14 +37,12 @@ def add_book(user_id):
         "available": True,
     }
 
-    # BookModel.create now returns a string ID
     book_id = BookModel.create(book)
     book["_id"] = book_id
     book["ownerId"] = str(book["ownerId"])
     return jsonify(book), 201
 
-
-# Update book details (only owner can update)
+# Update book details
 def update_book(user_id, book_id):
     book = BookModel.find_by_id(book_id)
     if not book:
@@ -70,8 +64,7 @@ def update_book(user_id, book_id):
     updates["ownerId"] = str(user_id)
     return jsonify(updates), 200
 
-
-# Delete book listing (only owner can delete)
+# Delete book listing
 def delete_book(user_id, book_id):
     book = BookModel.find_by_id(book_id)
     if not book:

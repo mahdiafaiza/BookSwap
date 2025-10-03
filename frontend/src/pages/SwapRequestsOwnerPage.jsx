@@ -6,7 +6,6 @@ const SwapRequestsOwnerPage = () => {
   const { user } = useAuth();
   const [ownerRequests, setOwnerRequests] = useState([]);
 
-  // Fetch all swap requests for books owned by the logged-in user
   useEffect(() => {
     if (!user?.token) return;
 
@@ -25,7 +24,6 @@ const SwapRequestsOwnerPage = () => {
     fetchOwnerRequests();
   }, [user]);
 
-  // Accept or reject a swap request
   const handleRespond = async (reqId, status) => {
     try {
       const res = await axiosInstance.put(
@@ -34,8 +32,9 @@ const SwapRequestsOwnerPage = () => {
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
 
-      // Update the request in the state
-      setOwnerRequests(ownerRequests.map((r) => (r._id === res.data._id ? res.data : r)));
+      setOwnerRequests(ownerRequests.map((r) =>
+        r._id === reqId ? { ...r, status } : r
+      ));
       alert(`Request ${status}`);
     } catch (err) {
       console.error('Error responding to swap request:', err);
@@ -54,11 +53,13 @@ const SwapRequestsOwnerPage = () => {
           {ownerRequests.map((req) => (
             <div key={req._id} className="bg-white p-4 shadow-md rounded flex flex-col justify-between">
               <div>
-                <h3 className="text-xl font-semibold">{req.requestedBookId?.title}</h3>
-                <p className="text-gray-600">by {req.requestedBookId?.author}</p>
-                <p className="mt-1 text-sm">Requested by: {req.requesterId?.name}</p>
-                <p className="mt-1 text-sm">Book Offered for Swap: {req.offeredBookId?.title || 'None'}</p>
-                <p className="mt-1 text-sm">Email: {req.requesterId?.email}</p>
+                <h3 className="text-xl font-semibold">{req.requestedBook?.title}</h3>
+                <p className="text-gray-600">by {req.requestedBook?.author}</p>
+                <p className="mt-1 text-sm">Requested by: {req.requester?.name || 'Unknown'}</p>
+                <p className="mt-1 text-sm">Email: {req.requester?.email || 'Hidden'}</p>
+                <p className="mt-1 text-sm">
+                  Book Offered for Swap: {req.offeredBook?.title || 'None'}
+                </p>
                 <p className="mt-2 text-sm">Message: {req.message || 'No message'}</p>
                 <p className="mt-1 font-semibold">Status: {req.status}</p>
               </div>

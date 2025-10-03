@@ -57,8 +57,9 @@ def login_user():
     }), 200
 
 
-# ---------- Profile ----------
+# ---------- Get Profile ----------
 def get_profile(current_user):
+    """current_user is the full dict (from middleware)."""
     return jsonify({
         "id": str(current_user["_id"]),
         "name": current_user.get("name"),
@@ -71,16 +72,16 @@ def get_profile(current_user):
 # ---------- Update Profile ----------
 def update_user_profile(current_user):
     data = request.json
-    update_fields = {
+    updates = {
         "name": data.get("name", current_user.get("name")),
         "email": data.get("email", current_user.get("email")),
         "university": data.get("university", current_user.get("university")),
         "address": data.get("address", current_user.get("address")),
     }
 
-
-    UserModel.update(current_user["_id"], update_fields)
+    UserModel.update(current_user["_id"], updates)
     updated = UserModel.find_by_id(current_user["_id"])
+
     token = jwt.encode({"id": str(updated["_id"])}, JWT_SECRET, algorithm="HS256")
 
     return jsonify({

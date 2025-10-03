@@ -6,7 +6,7 @@ const LandingPage = () => {
   const { user } = useAuth();
   const [books, setBooks] = useState([]);
   const [myBooks, setMyBooks] = useState([]);
-  const [swapInputs, setSwapInputs] = useState({}); // Track offered book & message per book
+  const [swapInputs, setSwapInputs] = useState({});
 
   // Fetch books
   useEffect(() => {
@@ -27,11 +27,10 @@ const LandingPage = () => {
         console.error('Error fetching books:', err);
       }
     };
-
     fetchBooks();
   }, [user]);
 
-  // Swap input handlers
+  // Track swap inputs
   const handleSwapInputChange = (bookId, field, value) => {
     setSwapInputs({
       ...swapInputs,
@@ -39,6 +38,7 @@ const LandingPage = () => {
     });
   };
 
+  // Request a swap
   const handleRequestSwapWithDetails = async (book) => {
     const offeredBookId = swapInputs[book._id]?.offeredBookId || null;
     const message = swapInputs[book._id]?.message || '';
@@ -53,17 +53,19 @@ const LandingPage = () => {
       );
 
       alert('Swap request sent successfully!');
+
+      // Optimistically mark book unavailable
       setBooks(
         books.map((b) =>
-          b._id === book._id ? { ...b, available: false } : b
+          b._id === book._id ? { ...b, available: false, status: 'pending' } : b
         )
       );
+
       setSwapInputs({
         ...swapInputs,
         [book._id]: { offeredBookId: '', message: '' },
       });
     } catch (err) {
-      console.error('Error requesting swap:', err);
       alert(err.response?.data?.message || 'Failed to request swap.');
     }
   };
@@ -77,7 +79,7 @@ const LandingPage = () => {
           Swap, share, and discover books with fellow readers. Find your next great read or exchange
           books you no longer need. Safe, simple, and social!
         </p>
-        <small>Hey - You will be able to see the request you have recieved and the swap request you've sent!</small>
+        <small>Hey - You will be able to see the requests you received and the swap requests you've sent!</small>
       </section>
 
       {/* Books Gallery */}
@@ -98,13 +100,18 @@ const LandingPage = () => {
                   <p className="mt-2 text-gray-700">{book.description}</p>
                   <p className="mt-1 text-sm text-gray-500">Condition: {book.condition}</p>
                   <p className="mt-1 text-sm text-gray-500">
-                    Status: {book.available ? 'Available' : 'Unavailable'}
+                    Status: {book.available ? 'Available' : book.status === 'accepted' ? 'Swapped' : 'Unavailable'}
                   </p>
-                  <p className="mt-1 text-sm text-gray-500">
-                    Owner: {book.ownerId?.name || '___'}
-                  </p>
+
+                  {/* ✅ Show owner info only if swap accepted */}
+                  {book.status === 'accepted' && book.owner && (
+                    <p className="mt-1 text-sm text-green-600">
+                      Owner: {book.owner.name} ({book.owner.email})
+                    </p>
+                  )}
                 </div>
 
+                {/* ✅ Only allow requesting if book is available */}
                 {book.available && user?.token ? (
                   <div className="mt-4 space-y-2">
                     <select
