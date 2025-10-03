@@ -24,7 +24,7 @@ const Navbar = () => {
             <Link to="/swap-requests/requester" className="mr-4 hover:text-blue-400">
               My Requests
             </Link>
-            <Link to="/profile" className="mr-4 px-4 py-2 bg-blue-700 rounded-lg hover:bg-blue-500 transition">
+            <Link to="/profile" className="mr-4 px-4 py-2 bg-blue-900 rounded-lg hover:bg-blue-500 transition">
               {user?.name ? `Welcome, ${user.name}` : "Profile"}
             </Link>
             <button
