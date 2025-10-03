@@ -18,6 +18,8 @@ function PrivateRoute({ children }) {
 }
 
 function App() {
+  const { user } = useAuth();
+
   return (
     <Router>
       <Navbar />
@@ -26,6 +28,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
+        {/* Root route: show LandingPage if no user, BookGallery if logged in */}
+        <Route path="/" element={user ? <BookGallery /> : <LandingPage />} />
+
         {/* Protected routes */}
         <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
         <Route path="/tasks" element={<PrivateRoute><Tasks /></PrivateRoute>} />
@@ -33,8 +38,8 @@ function App() {
         <Route path="/swap-requests/owner" element={<PrivateRoute><SwapRequestsOwnerPage /></PrivateRoute>} />
         <Route path="/swap-requests/requester" element={<PrivateRoute><MySwapRequestsPage /></PrivateRoute>} />
 
-        {/* Public landing page */}
-        <Route path="/" element={<LandingPage />} />
+        {/* Catch-all redirect */}
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
   );
