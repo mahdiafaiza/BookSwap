@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axiosInstance from '../axiosConfig';
 import { useAuth } from '../context/AuthContext';
+import { Link } from "react-router-dom";
 
 const LandingPage = () => {
   const { user } = useAuth();
@@ -22,12 +23,12 @@ const LandingPage = () => {
                 </p>
 
                 {/* Action Button */}
-                <button
+                <Link
                     to="/register"
                     className="bg-green-500 px-4 py-2 rounded hover:bg-green-700"
                 >
                     Register
-                </button>
+                </Link>
             </div>
         </section>
     </div>
