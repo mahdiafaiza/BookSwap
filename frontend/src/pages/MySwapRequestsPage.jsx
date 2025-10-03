@@ -8,7 +8,6 @@ const MySwapRequestsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch all swap requests made by the logged-in user (requester)
   useEffect(() => {
     if (!user?.token) return;
 
@@ -44,17 +43,19 @@ const MySwapRequestsPage = () => {
           {myRequests.map((req) => (
             <div key={req._id} className="bg-white p-4 shadow-md rounded flex flex-col justify-between">
               <div>
-                <h2 className="text-xl font-semibold">{req.requestedBookId?.title}</h2>
-                <p className="text-gray-600">Author: {req.requestedBookId?.author}</p>
-                <p className="text-gray-600">Owner: {req.ownerId?.name}</p>
-
-                {req.status === 'accepted' && req.ownerId?.email && (
-                  <p className="text-green-600">📧 Owner Email: {req.ownerId.email}</p>
+                <h2 className="text-xl font-semibold">{req.requestedBook?.title}</h2>
+                <p className="text-gray-600">Author: {req.requestedBook?.author}</p>
+                
+                {/* Owner only shown when request is accepted */}
+                {req.status === 'accepted' && (
+                  <p className="text-gray-600">
+                    Owner: {req.ownerId?.name} | Contact Email:  {req.ownerId?.email}
+                  </p>
                 )}
 
-                {req.offeredBookId && (
+                {req.offeredBook && (
                   <p className="mt-1 text-sm">
-                    You offered: <span className="font-semibold">{req.offeredBookId.title}</span>
+                    You offered: <span className="font-semibold">{req.offeredBook.title}</span>
                   </p>
                 )}
 

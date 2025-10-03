@@ -19,10 +19,10 @@ def route_login():
 @auth_bp.route("/profile", methods=["GET"])
 @token_required
 def route_get_profile(current_user):
-    return get_profile(current_user["_id"])
+ return get_profile(current_user) 
 
 # Update profile (protected)
 @auth_bp.route("/profile", methods=["PUT"])
 @token_required
 def route_update_profile(current_user):
-    return update_user_profile(current_user["_id"])
+    return update_user_profile(current_user)
